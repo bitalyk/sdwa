@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Injector</title>
+    <script>
+        function injectScript() {
+            // Define the script to be injected
+            const scriptContent = `
+                // Generate a random 3-digit number and log it to the console
+                function getRandomThreeDigitNumber() {
+                    return Math.floor(Math.random() * 900) + 100;
+                }
+
+                console.log('Injected 3-digit number:', getRandomThreeDigitNumber());
+            `;
+
+            // Open a new window with index.html
+            const newWindow = window.open('index.html', 'targetWindow');
+
+            if (newWindow) {
+                // Add a delay to ensure the new window is fully loaded
+                const interval = setInterval(function() {
+                    if (newWindow.document.readyState === 'complete') {
+                        clearInterval(interval);
+
+                        // Create a new script element
+                        const script = newWindow.document.createElement('script');
+                        script.textContent = scriptContent;
+
+                        // Remove existing script elements
+                        const existingScripts = newWindow.document.querySelectorAll('script');
+                        existingScripts.forEach(script => script.remove());
+
+                        // Append the new script
+                        newWindow.document.body.appendChild(script);
+                    }
+                }, 100); // Check every 100ms
+            } else {
+                console.error('Failed to open the new window.');
+            }
+        }
+
+        window.onload = injectScript;
+    </script>
+</head>
+<body>
+    <h1>Script Injector</h1>
+</body>
+</html>
